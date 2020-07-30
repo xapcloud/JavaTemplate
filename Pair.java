@@ -1,4 +1,7 @@
-public class Pair<K extends Comparable<K>, V extends Comparable<V>> implements Comparable<Pair<K, V>> {
+import java.io.Serializable;
+
+public class Pair<K, V> implements Comparable<Pair<K, V>>, Serializable {
+    private static final long serialVersionUID = 1L;
 
     private K key;
 
@@ -25,6 +28,7 @@ public class Pair<K extends Comparable<K>, V extends Comparable<V>> implements C
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o instanceof Pair) {
