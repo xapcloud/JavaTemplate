@@ -38,9 +38,7 @@ public class Pair<K, V> implements Comparable<Pair<K, V>>, Serializable {
         if (this == o) return true;
         if (o instanceof Pair) {
             Pair pair = (Pair) o;
-            if (!Objects.equals(key, pair.key) || !Objects.equals(value, pair.value))
-                return false;
-            return true;
+            return Objects.equals(key, pair.key) && Objects.equals(value, pair.value);
         }
         return false;
     }
