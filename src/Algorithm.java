@@ -65,4 +65,18 @@ public class Algorithm {
         }
         return c;
     }
+
+    int fastPower(int a, int b, int module) {
+        long ans = 1;
+        long base = a % module;
+        while (b != 0) {
+            if ((b & 1) != 0) {
+                ans = (ans * base) % module;
+            }
+            base = (base * base) % module;
+            b >>= 1;
+
+        }
+        return (int) ans;
+    }
 }
