@@ -49,12 +49,12 @@ public class MathAlgorithm {
     // O(m * n * k)
     long[][] matrixMultiply(long[][] a, long[][] b) {
         long[][] c = new long[a.length][b[0].length];
-        int x, i, j;
+        int i, j, k;
         for (i = 0; i < a.length; i++) {
             for (j = 0; j < b[0].length; j++) {
                 long temp = 0;
-                for (x = 0; x < b.length; x++) {
-                    temp += (a[i][x] * b[x][j]) % module;
+                for (k = 0; k < b.length; k++) {
+                    temp += (a[i][k] * b[k][j]) % module;
                 }
                 c[i][j] = temp % module;
             }
@@ -77,7 +77,11 @@ public class MathAlgorithm {
 
     // 矩阵乘法满足结合律， 仅限方阵
     long[][] fastPowerMatrix(long[][] m, int n) {
-        long[][] ans = {{1, 0}, {0, 1}};
+        int len = m.length;
+        long[][] ans = new long[len][len];
+        for (int i = 0; i < len; i++) {
+            ans[i][i] = 1;
+        }
         long[][] base = m;
         while (n != 0) {
             if ((n & 1) != 0) {
