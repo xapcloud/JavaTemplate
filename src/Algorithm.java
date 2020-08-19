@@ -1,82 +1,27 @@
 package src;
 
 public class Algorithm {
-
-    int Fibonacci(int n) {
-        if (n <= 1) {
-            return n;
-        } else {
-            return Fibonacci(n - 1) + Fibonacci(n - 2);
+    void nextPermutation(int[] nums) {
+        int maxIdx = nums.length - 1;
+        int i = maxIdx;
+        while (i > 0 && nums[i] <= nums[i - 1]) {
+            i--;
         }
-    }
-
-    int Fibonacci1(int n) {
-        if (n <= 1) {
-            return n;
-        } else {
-            int a = 0, b = 1;
-            for (int i = 2; i <= n; i++) {
-                b = a + b;
-                a = b - a;
-            }
-            return b;
-        }
-    }
-
-    int Fibonacci2(int n) {
-        double sqrt5 = Math.sqrt(5);
-        return (int) (sqrt5 / 5 * (Math.pow((1 + sqrt5) / 2, n) - Math.pow((1 - sqrt5) / 2, n)));
-    }
-
-    int Fibonacci3(int n) {
-        if (n <= 1) {
-            return n;
-        } else {
-            return Fibonacci3Helper(n)[0][1];
-        }
-    }
-
-    int[][] Fibonacci3Helper(int n) {
-        if (n <= 1) {
-            return new int[][]{{1, 1}, {1, 0}};
-        } else if ((n & 1) == 0) {
-            int[][] temp = Fibonacci3Helper(n / 2);
-            temp = matrixMultiply(temp, temp);
-            return temp;
-        } else {
-            int[][] temp = Fibonacci3Helper(n / 2);
-            temp = matrixMultiply(temp, temp);
-            temp = matrixMultiply(temp, new int[][]{{1, 1}, {1, 0}});
-            return temp;
-        }
-    }
-
-    public static int[][] matrixMultiply(int[][] a, int[][] b) {
-        int[][] c = new int[a.length][b[0].length];
-        int x, i, j;
-        for (i = 0; i < a.length; i++) {
-            for (j = 0; j < b[0].length; j++) {
-                int temp = 0;
-                for (x = 0; x < b.length; x++) {
-                    temp += a[i][x] * b[x][j];
+        if (i > 0) {
+            for (int j = maxIdx; j >= i; j--) {
+                if (nums[j] > nums[i - 1]) {
+                    int temp = nums[i - 1];
+                    nums[i - 1] = nums[j];
+                    nums[j] = temp;
+                    break;
                 }
-                c[i][j] = temp;
             }
         }
-        return c;
-    }
-
-    int fastPower(int a, int b, int module) {
-        long ans = 1;
-        long base = a % module;
-        while (b != 0) {
-            if ((b & 1) != 0) {
-                ans = (ans * base) % module;
-            }
-            base = (base * base) % module;
-            b >>= 1;
-
+        int midIdx = i + (maxIdx - i) / 2;
+        for (int k = i; k <= midIdx; k++) {
+            int temp = nums[k];
+            nums[k] = nums[i + maxIdx - k];
+            nums[i + maxIdx - k] = temp;
         }
-        return (int) ans;
     }
 }
