@@ -1,6 +1,6 @@
 package src;
 
-class Algorithm {
+public class Algorithm {
     void nextPermutation(int[] nums) {
         int maxIdx = nums.length - 1;
         int i = maxIdx;
