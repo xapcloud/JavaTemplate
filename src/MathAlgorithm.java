@@ -92,4 +92,21 @@ public class MathAlgorithm {
         }
         return ans;
     }
+
+    public static long combination(int n, int k) {
+        long[][] matrix = new long[n + 1][k + 1];
+        int module = (int) 1e9 + 7;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j <= k; j++) {
+                if (j == 0) {
+                    matrix[i][j] = 1;
+                } else if (j == 1) {
+                    matrix[i][j] = i;
+                } else {
+                    matrix[i][j] = (matrix[i - 1][j - 1] + matrix[i - 1][j]) % module;
+                }
+            }
+        }
+        return matrix[n][k];
+    }
 }
