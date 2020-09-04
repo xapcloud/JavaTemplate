@@ -1,5 +1,48 @@
 package src;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.stream.IntStream;
+
+class UnionFind {
+    int n;
+    int[] parent;
+
+    UnionFind(int n) {
+        this.n = n;
+        this.parent = new int[n];
+        for (int i = 0; i < n; i++) {
+            this.parent[i] = i;
+        }
+    }
+
+    boolean union(int x, int y) {
+        int min = Math.min(x, y);
+        int max = Math.max(x, y);
+        if (find(min) == find(max))
+            return false;
+        parent[find(min)] = find(max);
+        return true;
+    }
+
+    int find(int x) {
+        if (x == parent[x])
+            return x;
+        parent[x] = find(parent[x]);
+        return parent[x];
+    }
+
+    @Override
+    public String toString() {
+        //return String.format("[%s]", Arrays.stream(parent).
+        //       mapToObj(String::valueOf).
+        //       collect(Collectors.joining(",")));
+        return Arrays.toString(parent);
+    }
+
+}
+
+
 public class Algorithm {
     void nextPermutation(int[] nums) {
         int maxIdx = nums.length - 1;
@@ -26,7 +69,8 @@ public class Algorithm {
     }
 
     //Arrays.binarySearch(arr, target)
-    //Collections.binarySearch(Arrays.stream(arr).boxed().collect(Collectors.toList()), target)
+    //Collections.binarySearch(Arrays.stream(arr).boxed().
+    //collect(Collectors.toList()), target)
     int binarySearch(int[] arr, int target) {
         int l = 0, r = arr.length - 1;
         while (l <= r) {
@@ -40,6 +84,13 @@ public class Algorithm {
             }
         }
         return -1;
+    }
+
+    int[] getSortedIndices(int[] arr) {
+        return IntStream.range(0, arr.length).boxed().
+                sorted(Comparator.comparingInt(i -> arr[i])).
+                //sorted((i, j) -> arr[i] - arr[j]).
+                        mapToInt(a -> a).toArray();
     }
 
 }
