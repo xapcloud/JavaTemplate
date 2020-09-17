@@ -1,7 +1,6 @@
 package src;
 
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.*;
 import java.util.stream.IntStream;
 
 class UnionFind {
@@ -93,4 +92,38 @@ public class Algorithm {
                         mapToInt(a -> a).toArray();
     }
 
+    List<ArrayList<Integer>> getCombination(int n, int m) {
+        List<ArrayList<Integer>> ret = new ArrayList<>();
+        Stack<Integer> stack = new Stack<>();
+        stack.push(1);
+        while (!stack.empty()) {
+            int topVar = stack.peek();
+            if (stack.size() == m) {
+                ret.add(new ArrayList<>(stack));
+                if (topVar + 1 <= n) {
+                    stack.pop();
+                    stack.push(topVar + 1);
+                } else {
+                    stack.pop();
+                    if (stack.empty()) {
+                        break;
+                    }
+                    int secTopVar = stack.pop();
+                    stack.push(secTopVar + 1);
+                }
+            } else {
+                if (topVar + 1 <= n) {
+                    stack.push(topVar + 1);
+                } else {
+                    stack.pop();
+                    if (stack.empty()) {
+                        break;
+                    }
+                    int secTopVar = stack.pop();
+                    stack.push(secTopVar + 1);
+                }
+            }
+        }
+        return ret;
+    }
 }
