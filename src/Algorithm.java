@@ -126,4 +126,33 @@ public class Algorithm {
         }
         return ret;
     }
+
+    boolean topologicalSort(int n, List<Pair<Integer, Integer>> edges) {
+        int[] inDegree = new int[n];
+        List<Integer> result = new ArrayList<>();
+        Map<Integer, List<Integer>> adj = new HashMap<>();
+        for (Pair<Integer, Integer> p : edges) {
+            inDegree[p.getValue()]++;
+            adj.computeIfAbsent(p.getKey(), k -> new ArrayList<>()).add(p.getValue());
+        }
+
+        for (int i = 0; i < n; i++) {
+            if (inDegree[i] == 0) {
+                result.add(i);
+            }
+        }
+
+        for (int i = 0; i < result.size(); i++) {
+            if (adj.containsKey(result.get(i))) {
+                for (int target : adj.get(result.get(i))) {
+                    inDegree[target]--;
+                    if (inDegree[target] == 0) {
+                        result.add(target);
+                    }
+                }
+            }
+        }
+
+        return result.size() == n;
+    }
 }
