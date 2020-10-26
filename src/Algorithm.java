@@ -33,9 +33,6 @@ class UnionFind {
 
     @Override
     public String toString() {
-        //return String.format("[%s]", Arrays.stream(parent).
-        //       mapToObj(String::valueOf).
-        //       collect(Collectors.joining(",")));
         return Arrays.toString(parent);
     }
 
@@ -92,6 +89,7 @@ public class Algorithm {
                         mapToInt(a -> a).toArray();
     }
 
+    // 获取组合数
     List<ArrayList<Integer>> getCombination(int n, int m) {
         List<ArrayList<Integer>> ret = new ArrayList<>();
         Stack<Integer> stack = new Stack<>();
@@ -127,6 +125,7 @@ public class Algorithm {
         return ret;
     }
 
+    // 拓扑排序
     boolean topologicalSort(int n, List<Pair<Integer, Integer>> edges) {
         int[] inDegree = new int[n];
         List<Integer> result = new ArrayList<>();
