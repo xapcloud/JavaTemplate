@@ -21,6 +21,39 @@ public class Function {
 
     }
 
+    public int maxFrequency(int[] A, long k) {
+        int i = 0, j;
+        Arrays.sort(A);
+        for (j = 0; j < A.length; ++j) {
+            k += A[j];
+            if (k < (long)A[j] * (j - i + 1))
+                k -= A[i++];
+        }
+        return j - i;
+    }
+    
+    public int maxFrequency(int[] nums, int k) {
+        Arrays.sort(nums);
+        int n = nums.length;
+        int [] sum = new int[n];
+        sum[0] = nums[0];
+        for (int i = 1; i < sum.length; i++) {
+            sum[i] = sum[i-1]+nums[i];
+        }
+
+        int max = 1;
+        int j = 0;
+        for (int i = 1; i < n; i++) {
+            for (;j < i; j++) {
+                if(nums[i] * (i-j+1) - (sum[i] - sum[j]+nums[j]) <= k){
+                    max = Math.max(i-j+1, max);
+                    break;
+                }
+            }
+        }
+        return max;
+    }
+
     public static double[] normalize(int [] vector) {
         int sum = 0;
         int len = vector.length;

@@ -3,6 +3,10 @@ package src;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.Queue;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 class TreeNode {
     int val;
@@ -129,5 +133,28 @@ public class Tree {
         }
         return ret;
     }
-
+     static void printTree(TreeNode root) {
+        Queue<Pair<TreeNode, Integer>> queue = new LinkedList<>();
+        queue.offer(new Pair<>(root, 0));
+        Map<Integer, List<TreeNode>> map = new HashMap<>();
+        while(!queue.isEmpty()){
+            Pair<TreeNode, Integer> p = queue.poll();
+            map.computeIfAbsent(p.getValue(), k->new ArrayList<>()).add(p.getKey());
+            if(p.getKey().left != null) {
+                queue.offer(new Pair<>(p.getKey().left, p.getValue()+1));
+            }
+            if(p.getKey().right != null) {
+                queue.offer(new Pair<>(p.getKey().right, p.getValue()+1));
+            }
+        }
+        for (int i = 0; i < 100; i++) {
+            if (!map.containsKey(i)){
+                break;
+            }
+            for(TreeNode n: map.get(i)){
+                System.out.print(n.toString()+"\t");
+            }
+            System.out.println();
+        }
+    }
 }
