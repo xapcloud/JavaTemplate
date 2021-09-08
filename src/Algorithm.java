@@ -64,6 +64,25 @@ public class Algorithm {
         }
     }
 
+    int findInsertPosition(int[] arr, int l, int r, int target) {
+        if (arr[l] >= target)
+            return l;
+        if(arr[r] < target) {
+            return target + 1;
+        }
+
+        while(r - l > 1) {
+            int mid = (r + l) / 2;
+            if(arr[mid] >= target) {
+                r = mid;
+            } else {
+                l = mid;
+            }
+        }
+        return l + 1;
+    }
+
+
     //Arrays.binarySearch(arr, target)
     //Collections.binarySearch(Arrays.stream(arr).boxed().
     //collect(Collectors.toList()), target)

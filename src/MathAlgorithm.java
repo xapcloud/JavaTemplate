@@ -108,4 +108,23 @@ public class MathAlgorithm {
         }
         return matrix[n][k];
     }
+
+    public static int getGCD(int a, int b) {
+        if (a < 0 || b < 0) {
+            return -1;
+        }
+        if (b == 0) {
+            return a;        }
+        while (a % b != 0) {
+            int temp = a % b;
+            a = b;
+            b = temp;
+        }
+        return b;
+    }
+
+    public static int getLDM(int a, int b) {
+        return a * b / getGCD(a, b);
+    }
+
 }
