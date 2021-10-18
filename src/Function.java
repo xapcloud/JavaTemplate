@@ -13,6 +13,87 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 
+class LockingTree {
+    private int [] parent;
+    private int [] status;
+    private Map<Integer, Set<Integer>> children;
+    private int n;
+
+    public LockingTree(int[] parent) {
+        this.n = parent.length;
+        this.parent = parent;
+        status = new int[n];
+
+        children = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            children.computeIfAbsent(parent[i], x -> new HashSet<>()).add(i);
+        }
+        getChildren(0);
+    }
+
+    private void getChildren(int num) {
+        if (children.containsKey(num)) {
+            Set<Integer> cur = children.get(num);
+            Set<Integer> des = new HashSet<>();
+            for (int x : cur) {
+                if (children.containsKey(x)){
+                    getChildren(x);
+                    des.addAll(children.get(x));
+                }
+            }
+            cur.addAll(des);
+            children.put(num, cur);
+        }
+    }
+
+    public boolean lock(int num, int user) {
+        if (status[num] == 0) {
+            status[num] = user;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean unlock(int num, int user) {
+        if (status[num] == user) {
+            status[num] = 0;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean upgrade(int num, int user) {
+        System.out.println(Arrays.toString(status));
+        if (status[num] != 0 || !children.containsKey(num)) {
+            return false;
+        }
+        int tmp = num;
+        while(tmp != -1 && status[tmp] == 0) {
+            tmp = parent[tmp];
+        }
+        if (tmp != -1){
+            return false;
+        }
+
+        boolean hasLockedChildren = false;
+        for(int x: children.get(num)) {
+            if(status[x] != 0) {
+                hasLockedChildren = true;
+                break;
+            }
+        }
+        if (hasLockedChildren) {
+            status[num] = user;
+            for(int x: children.get(num)) {
+                status[x] = 0;
+            }
+            return true;
+        }
+
+        return false;
+    }
+}
+
 class Test {
     public int a;
 
@@ -132,12 +213,230 @@ public class Function {
     static DateTimeFormatter dft = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     Map<Integer, Integer> map = new HashMap<>();
 
+
+    public static int test(Map<Integer, Integer> test) {
+        test.put(1,1);
+        return 1;
+    }
+
     public static void main(String[] args) throws IOException {
         Function f = new Function();
-        //System.out.println(f.minFlips("01001001101"));
+//        Algorithm a = new Algorithm();
+//        List<ArrayList<Integer>> ret = a.getCombination(4,3);
+//        for (List<Integer> l : ret) {
+//            System.out.println(l);
+//        }
+
+//        Map<Integer, Integer> m = new HashMap<>();
+//        System.out.println(test(m));
+//        System.out.println(m);
+
+//        try (InputStream input = new FileInputStream("/Users/xyma/IdeaProjects/JavaTemplate/base.properties")) {
+//
+//            Properties prop = new Properties();
+//
+//            // load a properties file
+//            prop.load(input);
+//
+//            // get the property value and print it out
+//            System.out.println(prop.getProperty("db.url"));
+//            System.out.println(prop.getProperty("macdonaldsSep"));
+//            System.out.println(prop.getProperty("appSep"));
+//
+//            String s = "a,b";
+//            System.out.println(Arrays.toString(s.split(prop.getProperty("macdonaldsSep"))));
+//                    BufferedReader reader;
+//        try {
+//            reader = new BufferedReader(new FileReader(
+//                    "/Users/xyma/Downloads/part-00221"));
+//            String line = reader.readLine();
+//            while (line != null) {
+//                System.out.println(Arrays.toString(line.split(prop.getProperty("appSep"))));
+//                // read next line
+//                line = reader.readLine();
+//                break;
+//            }
+//            reader.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//        }
+
+        Algorithm a = new Algorithm();
+        System.out.println(a.getLPS("abcefec"));
 
     }
 
+    public int maxProduct(String s) {
+
+        return 0;
+    }
+
+    public String reversePrefix(String word, char ch) {
+        int index = word.indexOf(ch);
+        if (index < 0) {
+            return word;
+        } else {
+            StringBuffer sb = new StringBuffer(word.substring(0,index+1));
+            return sb.reverse() + word.substring(index+1);
+        }
+    }
+
+    public long interchangeableRectangles(int[][] rectangles) {
+        Map<Double, Long> map = new HashMap<>();
+        for(int i = 0; i < rectangles.length; i ++) {
+            double cur = rectangles[i][0]/(double)rectangles[i][1];
+            map.put(cur, map.getOrDefault(cur, (long)0) + 1);
+        }
+        long ret = 0;
+        for(double k: map.keySet()) {
+            if (map.get(k) > 1) {
+                ret+= (map.get(k) * (map.get(k) -1) /2);
+            }
+        }
+        return ret;
+    }
+
+
+    public static Map<String, String> getProductInfo(String s) {
+        Map<String, String> ret = new HashMap<>();
+        String [] sourceInfo = s.split("::");
+
+        for (String si: sourceInfo) {
+            int index = si.indexOf(":");
+            ret.put(si.substring(0, index), si.substring(index));
+        }
+        return ret;
+    }
+    public static int getGCD(int a, int b) {
+        if (a < 0 || b < 0) {
+            return -1;
+        }
+        if (b == 0) {
+            return a;        }
+        while (a % b != 0) {
+            int temp = a % b;
+            a = b;
+            b = temp;
+        }
+        return b;
+    }
+    public int findGCD(int[] nums) {
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+
+        for(int x: nums) {
+            min = Math.min(min, x);
+            max = Math.max(max, x);
+        }
+
+        return getGCD(min,max);
+
+    }
+
+    public int minimizeTheDifference(int[][] mat, int target) {
+        return minimizeTheDifferenceHelper(mat, target, 0);
+    }
+
+
+    public int minimizeTheDifferenceHelper(int [][] mat, int target, int row) {
+        int ret = Integer.MAX_VALUE;
+        if (row == mat.length -1) {
+            for(int x : mat[row]) {
+                ret = Math.min(ret, Math.abs(target - x));
+            }
+            return ret;
+        }
+        for (int x : mat[row]) {
+            if (target > x) {
+                ret = Math.min(ret, minimizeTheDifferenceHelper(mat, target-x, row + 1));
+            }
+        }
+        return ret;
+    }
+
+    public String findDifferentBinaryString(String[] nums) {
+        Set<Integer> set = new HashSet<>();
+        for(String s : nums){
+            set.add(Integer.parseInt(s, 2));
+        }
+        int n = nums.length;
+        for(int i = 0; i < 65536; i ++){
+            if(!set.contains(i)) {
+                String s = Integer.toBinaryString(i);
+                while (s.length() < n) {
+                    s = '0' + s;
+                }
+                return s;
+            }
+        }
+
+        return null;
+    }
+
+    public int minSessions(int[] tasks, int sessionTime) {
+        Arrays.sort(tasks);
+
+        return 0;
+    }
+
+    public String kthLargestNumber(String[] nums, int k) {
+        Arrays.sort(nums, (o1, o2) -> {
+            if (o1.length() == o2.length()) {
+                return o2.compareTo(o1);
+            } else {
+                return o2.length() - o1.length();
+            }
+        });
+
+        return nums[k-1];
+    }
+
+    public int[][] findFarmland(int[][] land) {
+        List<int[]> list = new ArrayList<>();
+        int m = land.length;
+        int n = land[0].length;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if((land[i][j] == 1) && (i==0 || land[i-1][j] == 0) && (j==0 || land[i][j-1] == 0)) {
+                    int ti = i;
+                    int tj = j;
+                    while(ti+1 < m && land[ti+1][tj] == 1) {
+                        ti++;
+                    }
+                    while(tj+1 < n && land[ti][tj+1] == 1) {
+                        tj++;
+                    }
+                    list.add(new int [] {i,j,ti,tj});
+                }
+            }
+        }
+        int [][] ret = new int[list.size()][4];
+        for (int i = 0; i < list.size(); i++) {
+            ret[i] = list.get(i);
+        }
+
+        return ret;
+    }
+
+    public int findMiddleIndex(int[] nums) {
+        int sum = 0;
+        for(int x : nums) {
+            sum += x;
+        }
+        int curSum = 0;
+        int n = nums.length;
+        for (int i = 0; i < n; i++) {
+            if (curSum == sum - curSum - nums[i]) {
+                return i;
+            }
+            curSum += nums[i];
+        }
+        return -1;
+    }
 
     public boolean gcdSort(int[] nums) {
 
