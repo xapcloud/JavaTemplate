@@ -13,6 +13,220 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 
+ interface NestedInteger {
+
+    // @return true if this NestedInteger holds a single integer, rather than a nested list.
+    public boolean isInteger();
+
+    // @return the single integer that this NestedInteger holds, if it holds a single integer
+    // Return null if this NestedInteger holds a nested list
+    public Integer getInteger();
+
+    // @return the nested list that this NestedInteger holds, if it holds a nested list
+    // Return empty list if this NestedInteger holds a single integer
+    public List<NestedInteger> getList();
+}
+
+class NestedIterator implements Iterator<Integer> {
+    List<NestedInteger> nestedList;
+    List<Integer> list;
+
+
+    public NestedIterator(List<NestedInteger> nestedList) {
+        this.nestedList = nestedList;
+        this.list = new ArrayList<>();
+        for (NestedInteger ni: nestedList) {
+            this.list.addAll(flattenList(ni));
+        }
+    }
+
+    public List<Integer> flattenList(NestedInteger ni) {
+        List<Integer> ret = new ArrayList<>();
+        if (ni.isInteger()) {
+            ret.add(ni.getInteger());
+        } else {
+            for (NestedInteger child: ni.getList()) {
+                ret.addAll(flattenList(child));
+            }
+        }
+        return ret;
+    }
+
+    @Override
+    public Integer next() {
+        return list.remove(0);
+    }
+
+    @Override
+    public boolean hasNext() {
+        return list.size() > 0;
+    }
+}
+
+class MinStack {
+    Stack<Integer> stack;
+    List<Integer> list;
+
+    public MinStack() {
+        stack = new Stack<>();
+        list = new ArrayList<>();
+    }
+
+    public void push(int val) {
+        stack.push(val);
+        if (list.isEmpty() || val < list.get(list.size()-1)) {
+            list.add(val);
+        } else {
+            list.add(list.get(list.size()-1));
+        }
+    }
+
+    public void pop() {
+        stack.pop();
+        list.remove(list.size()-1);
+    }
+
+    public int top() {
+        return stack.peek();
+    }
+
+    public int getMin() {
+        return list.get(list.size()-1);
+    }
+}
+
+class Solution {
+    int [] origin;
+    int n;
+
+    public Solution(int[] nums) {
+        this.origin = nums;
+        this.n = nums.length;
+    }
+
+    public int[] reset() {
+        return origin;
+    }
+
+    public int[] shuffle() {
+        int [] ret = Arrays.copyOf(origin, n);
+        for (int i = n-1; i > 0 ; i--) {
+            int cur = new Random().nextInt(i+1);
+            int tmp = ret[i];
+            ret[i] = ret[cur];
+            ret[cur] = tmp;
+        }
+        return ret;
+    }
+}
+
+class MyCircularDeque {
+    int capacity;
+    List<Integer> list;
+
+    public MyCircularDeque(int k) {
+        this.capacity = k;
+        this.list = new ArrayList<>();
+    }
+
+    public boolean insertFront(int value) {
+        if (list.size() < capacity) {
+            list.add(0, value);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean insertLast(int value) {
+        if (list.size() < capacity) {
+            list.add(value);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean deleteFront() {
+        if (!list.isEmpty()) {
+            list.remove(0);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean deleteLast() {
+        if (!list.isEmpty()) {
+            list.remove(list.size() -1);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public int getFront() {
+        return list.isEmpty() ? -1 : list.get(0);
+    }
+
+    public int getRear() {
+        return list.isEmpty() ? -1 : list.get(list.size() -1);
+    }
+
+    public boolean isEmpty() {
+        return list.isEmpty();
+    }
+
+    public boolean isFull() {
+        return list.size() == capacity;
+    }
+}
+
+
+class RandomizedSet {
+    Map<Integer, Integer> map;
+    List<Integer> list;
+
+    public RandomizedSet() {
+        map = new HashMap<>();
+        list = new ArrayList<>();
+    }
+
+    public boolean insert(int val) {
+        if (map.containsKey(val)) {
+            return false;
+        } else {
+            list.add(val);
+            map.put(val, list.size()-1);
+            return true;
+        }
+    }
+
+    public boolean remove(int val) {
+        if (map.containsKey(val)) {
+            if (map.get(val) == list.size() -1) {
+                list.remove(list.size()-1);
+                map.remove(val);
+            } else {
+                list.set(map.get(val), list.get(list.size()-1));
+                list.remove(list.size()-1);
+                map.put(list.get(map.get(val)), map.get(val));
+                map.remove(val);
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public int getRandom() {
+        int r = (int)(Math.random() * list.size());
+        return list.get(r);
+    }
+}
+
+
+
 class LockingTree {
     private int [] parent;
     private int [] status;
@@ -265,14 +479,544 @@ public class Function {
 //            ex.printStackTrace();
 //        }
 
-        Algorithm a = new Algorithm();
-        System.out.println(a.getLPS("abcefec"));
+//        MathAlgorithm a = new MathAlgorithm();
+//
+//        double ret = 0;
+//        for(int i = 6; i <= 10; i ++) {
+//            long cur = a.combination(10, i);
+//            ret += cur * Math.pow(1/4.0, i) * Math.pow(3/4.0, 10-i);
+//        }
+//        System.out.println(ret);
+
+        System.out.println(f.splitIntoFibonacci("214748364721474836422147483641"));
+        System.out.println(f.splitIntoFibonacci("214748364612147483647"));
+        //System.out.println(Integer.MAX_VALUE - 1);
+
 
     }
 
-    public int maxProduct(String s) {
+    public int smallestRangeI(int[] nums, int k) {
+        int max = Integer.MIN_VALUE;
+        int min = Integer.MAX_VALUE;
+
+        for (int i = 0; i < nums.length; i++) {
+            max = Math.max(max, nums[i]);
+            min = Math.min(min, nums[i]);
+        }
+        return max - min > 2 * k ? max-min-2*k : 0;
+    }
+
+    public int smallestRangeII(int[] nums, int k) {
 
         return 0;
+    }
+
+    public int countDigitOneVerify(int n) {
+        int ret = 0;
+        for (int i = 1; i <= n; i++) {
+            char[] x = String.valueOf(i).toCharArray();
+            for (char c : x) {
+                if (c == '1') {
+                    ret++;
+                }
+            }
+        }
+        return ret;
+    }
+
+
+    public int countDigitOne(int n) {
+        int ret = 0;
+        char[] cc = String.valueOf(n).toCharArray();
+        if (cc.length == 1) {
+            return n > 0 ? 1 : 0;
+        }
+        ret += countDigitOneHelper(cc.length - 1);
+
+
+        //System.out.println(ret);
+        int sub = n % ((int) Math.pow(10, cc.length - 1));
+        if (cc[0] == '1') {
+            ret += (sub + 1 + countDigitOne(sub));
+        } else {
+            ret += ((int) Math.pow(10, cc.length - 1));
+            ret += (cc[0] - '0' - 1) * countDigitOneHelper(cc.length - 1);
+            ret += countDigitOne(sub);
+        }
+        return ret;
+    }
+
+    public int countDigitOneHelper(int n) {
+//        if (n == 0) {
+//            return 0;
+//        } else {
+//            return (int) Math.pow(10, n - 1) + 10 * countDigitOneHelper(n - 1);
+//        }
+        // 与上面代码等价
+        return n * (int) Math.pow(10, n - 1);
+    }
+    // 842
+    public List<Integer> splitIntoFibonacci(String num) {
+        int n = num.length();
+        for (int i = 1; i < n - 1; i++) {
+            for (int j = i+1; j < n; j++) {
+                List<Integer> tmp = checkFibonacci(num, 0, i, j);
+                if (tmp.size() > 0) {
+                    return tmp;
+                }
+            }
+        }
+        return new ArrayList<>();
+    }
+    public List<Integer> checkFibonacci(String num, int begin, int i , int j) {
+        List<Integer> ret = new ArrayList<>();
+        while( j < num.length()) {
+            String a = num.substring(begin, i);
+            String b = num.substring(i, j);
+            //System.out.println(a+"\t"+b);
+
+            if (a.length() > 10 || b.length() > 10 ){
+                return new ArrayList<>();
+            }
+            long la = Long.parseLong(a);
+            long lb = Long.parseLong(b);
+
+            //System.out.println(la+"\t"+lb);
+
+            if (la > Integer.MAX_VALUE || lb > Integer.MAX_VALUE || la + lb > Integer.MAX_VALUE) {
+                return new ArrayList<>();
+            }
+
+            if (begin == 0) {
+                ret.add(Integer.parseInt(a));
+                ret.add(Integer.parseInt(b));
+            }
+            if ((a.length() > 1 && a.charAt(0) == '0') || (b.length() > 1 && b.charAt(0) == '0')) {
+                return new ArrayList<>();
+            }
+            String sum = String.valueOf(Integer.parseInt(a) + Integer.parseInt(b));
+            //System.out.println(a +"\t"+b+"\t"+num.substring(j, Math.min(j+sum.length(), num.length())));
+            if (num.substring(j, Math.min(j+sum.length(), num.length())).equals(sum)) {
+                ret.add(Integer.parseInt(sum));
+                begin = i;
+                i = j;
+                j = j + sum.length();
+                if (j == num.length()) {
+                    return ret;
+                }
+            } else {
+                return new ArrayList<>();
+            }
+        }
+        return new ArrayList<>();
+    }
+
+
+    public TreeNode invertTree(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return root;
+        } else {
+            invertTree(root.left);
+            invertTree(root.right);
+
+            TreeNode tmp = root.left;
+            root.left = root.right;
+            root.right = tmp;
+
+            return root;
+        }
+    }
+
+
+    public int makeStringSorted(String s) {
+        int module = (int)1e9+7;
+
+        return 0;
+    }
+    // 115
+    public int numDistinct(String s, String t) {
+
+
+        return 0;
+    }
+
+    // 1835
+    public int getXORSum(int[] arr1, int[] arr2) {
+        long m = arr1.length;
+        long n = arr2.length;
+        long [] arr1Bit = new long[32];
+        long [] arr2Bit = new long[32];
+
+        for(int x: arr1) {
+            for (int i = 0; i < 32; i++) {
+                if ((x & (1<<i)) > 0) {
+                    arr1Bit[i]++;
+                }
+            }
+        }
+        for(int x: arr2) {
+            for (int i = 0; i < 32; i++) {
+                if ((x & (1<<i)) > 0) {
+                    arr2Bit[i]++;
+                }
+            }
+        }
+
+        int ret = 0;
+        for (int i = 0; i < 32; i++) {
+            long oneCnt = arr1Bit[i] * arr2Bit[i];
+            ret |= ((oneCnt%2==0 ? 0 : 1) << i);
+        }
+        return ret;
+    }
+
+
+    public int dominantIndex(int[] nums) {
+        int max = -1;
+        int idx = -1;
+        int n = nums.length;
+
+        for (int i = 0; i < n; i++) {
+            if (nums[i] > max) {
+                max = nums[i];
+                idx = i;
+            }
+        }
+
+        for (int i = 0; i < n; i++) {
+            if (i != idx && nums[i] * 2 > max) {
+                return -1;
+            }
+        }
+        return idx;
+    }
+    public int numFactoredBinaryTrees(int[] arr) {
+        int module = (int)1e9+7;
+        Set<Integer> set = new HashSet<>();
+        for (int x: arr) {
+            set.add(x);
+        }
+        Arrays.sort(arr);
+        int n = arr.length;
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            for (int j = i; j < n; j++) {
+                long tmp = (long)arr[i] * (long)arr[j];
+                if (tmp < Integer.MAX_VALUE && set.contains((int)tmp)) {
+                    map.computeIfAbsent((int)tmp, x -> new ArrayList<>()).add(arr[i]);
+                }
+            }
+        }
+
+        Map<Integer, Integer> cnt = new HashMap<>();
+        long ret = 0;
+        for (int i = 0; i < n; i++) {
+            if (map.containsKey(arr[i])) {
+                long curSum = 1;
+                for(int x: map.get(arr[i])) {
+                    int leftCnt = cnt.get(x);
+                    int rightCnt = cnt.get(arr[i]/x);
+                    long product = (int)(((long)leftCnt*(long)rightCnt)%(long)(module));
+                    if (x * x == arr[i]) {
+                        curSum += product;
+                        curSum %= module;
+                    } else {
+                        curSum += (int)product * 2 %module;
+                    }
+                }
+                cnt.put(arr[i], (int)(curSum % module));
+            } else {
+                cnt.put(arr[i],1);
+            }
+        }
+
+        for (int x : cnt.keySet()) {
+            ret += cnt.get(x);
+            ret %= module;
+        }
+
+//        System.out.println(Arrays.toString(arr));
+//        System.out.println(map);
+//        System.out.println(cnt);
+        return (int)ret;
+    }
+
+
+    public boolean canConstruct(String ransomNote, String magazine) {
+        int [] cntRansom = new int[26];
+        int [] cntMagazine = new int[26];
+        for (int i = 0; i < ransomNote.length(); i++) {
+            cntRansom[ransomNote.charAt(i)-'a']++;
+        }
+        for (int i = 0; i < magazine.length(); i++) {
+            cntMagazine[magazine.charAt(i)-'a']++;
+        }
+
+        for (int i = 0; i < 26; i++) {
+            if (cntRansom[i] > cntMagazine[i]){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public int longestMountain(int[] arr) {
+        int n = arr.length;
+        int [] left = new int[n];
+        int [] right = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (i==0 || arr[i] <= arr[i-1]) {
+                left[i] = 1;
+            } else {
+                left[i] = left[i-1] + 1;
+            }
+            int j = n-1-i;
+            if (j==n-1 || arr[j] <= arr[j+1]) {
+                right[j] = 1;
+            } else {
+                right[j] = right[j+1] + 1;
+            }
+        }
+        int ret = 0;
+        for (int i = 0; i < n; i++) {
+            if (left[i] > 1 & right[i] > 1)
+                ret = Math.max(ret, left[i]+right[i]-1);
+        }
+        return ret >= 3 ? ret : 0;
+    }
+
+
+    public void printMatrix(int [][] x) {
+        System.out.println("================");
+        for( int[] xx: x) {
+            System.out.println(Arrays.toString(xx));
+        }
+    }
+    public int getValue(int [][] x, int m, int n, int i, int j) {
+        if (i >= 0 && i < m && j >=0 && j < n) {
+            return x[i][j];
+        } else {
+            return 0;
+        }
+    }
+
+    public int largestMagicSquare(int[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+        int [][] rowSum = new int[m][n];
+        int [][] colSum = new int[m][n];
+        int [][] digLeft = new int[m][n];
+        int [][] digRight = new int[m][n];
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                rowSum[i][j] = getValue(rowSum, m, n, i, j-1) + grid[i][j];
+                colSum[i][j] = getValue(colSum, m, n, i-1, j) + grid[i][j];
+                digLeft[i][j] = getValue(digLeft, m, n, i-1, j-1) + grid[i][j];
+                digRight[i][j] = getValue(digRight, m, n, i-1, j+1) + grid[i][j];
+            }
+        }
+
+        int ret = 1;
+        for(int i = 0; i < m ;i ++) {
+            for(int j = 0; j < n ;j ++){
+                for (int k = 1; i+k < m && j+k < n; k++) {
+                    int s = rowSum[i][j+k] - rowSum[i][j] + grid[i][j];
+                    boolean valid = true;
+                    for (int l = 0; l <= k; l++) {
+                        if (rowSum[i+l][j+k] - rowSum[i+l][j] + grid[i+l][j] != s) {
+                            valid = false;
+                            break;
+                        }
+                        if (colSum[i+k][j+l] - colSum[i][j+l] + grid[i][j+l] != s) {
+                            valid = false;
+                            break;
+                        }
+                    }
+                    if (digLeft[i+k][j+k] - digLeft[i][j] + grid[i][j] != s ||
+                            digRight[i+k][j] - digRight[i][j+k] + grid[i][j+k] != s){
+                        valid = false;
+                    }
+
+                    if (!valid) {
+                        continue;
+                    } else {
+                        ret = Math.max(ret, k+1);
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
+
+    public String frequencySort(String s) {
+        char [] ss = s.toCharArray();
+        int [] cnt = new int[123];
+        for (char c : ss) {
+            cnt[(int)c] ++;
+        }
+        int [] idx = IntStream.range(0, cnt.length).boxed().
+            sorted(Comparator.comparingInt(i -> cnt[i])).
+                    mapToInt(a -> a).toArray();
+        StringBuffer sb = new StringBuffer();
+        for (int i = idx.length-1; i >=0; i--) {
+            if (cnt[idx[i]] > 0) {
+                char c = (char)idx[i];
+                for (int j = 0; j < cnt[idx[i]]; j++) {
+                    sb.append(c);
+                }
+
+            } else {
+                break;
+            }
+        }
+        return sb.toString();
+    }
+
+    public String longestPrefix(String s) {
+        int n = s.length();
+        int [] next = new int[n];
+        int idx = 1;
+        int now = 0;
+
+        while (idx < n) {
+            if (s.charAt(idx) == s.charAt(now)) {
+                now += 1;
+                next[idx] = now;
+                idx += 1;
+            } else {
+                if (now > 0 ) {
+                    now = next[now-1];
+                } else {
+                    next[idx] = 0;
+                    idx ++;
+                }
+            }
+        }
+        return s.substring(0, next[n-1]);
+    }
+
+    public int[] nextGreaterElement(int[] nums1, int[] nums2) {
+        Map<Integer, Integer> nb = new HashMap<>();
+        Stack<Integer> stack = new Stack<>();
+        int n = nums2.length;
+        for (int i = 0; i < n; i++) {
+            while(!stack.isEmpty() && stack.peek() < nums2[i]) {
+                nb.put(stack.pop(), nums2[i]);
+            }
+            stack.push(nums2[i]);
+        }
+        int m = nums1.length;
+        int [] ret = new int[m];
+        for (int i = 0; i < m; i++) {
+            ret[i] = nb.getOrDefault(nums1[i],-1);
+        }
+        return ret;
+    }
+
+    public long maxTaxiEarnings(int n, int[][] rides) {
+
+
+        return 0;
+    }
+
+    public int[] findOriginalArray(int[] changed) {
+        Arrays.sort(changed);
+        int n = changed.length;
+        if (n%2 != 0) {
+            return new int[0];
+        }
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(changed[i], map.getOrDefault(changed[i], 0) + 1);
+        }
+        int twice = 0;
+        int half = 0;
+        for (int i = 0; i < n; i++) {
+            if (map.containsKey(changed[i] * 2)) {
+                twice ++;
+            }
+            if (changed[i]%2==0 &&map.containsKey(changed[i]/2)) {
+                half ++;
+            }
+        }
+        if (twice != half) {
+            return new int[0];
+        }
+
+
+
+
+
+
+        return null;
+    }
+
+    public int countKDifference(int[] nums, int k) {
+        int ret = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        int n = nums.length;
+        for (int i = 0; i < n; i++) {
+            ret += map.getOrDefault(nums[i]+k, 0);
+            ret += map.getOrDefault(nums[i]-k, 0);
+            map.put(nums[i], map.getOrDefault(nums[i], 0) + 1);
+        }
+        return ret;
+    }
+
+    public int[] smallestMissingValueSubtree(int[] parents, int[] nums) {
+        int n = parents.length;
+        Map<Integer, List<Integer>> children = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            if(parents[i] >= 0) {
+                children.computeIfAbsent(parents[i], x-> new ArrayList<>()).add(i);
+            }
+        }
+        Map<Integer, Integer> childBit = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            int curValue = 0;
+            for(int x : children.get(i)) {
+                curValue |= x;
+            }
+        }
+
+        return null;
+    }
+
+    public int maxProduct(String s) {
+        int n = s.length();
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < (1<<s.length()); i++) {
+            String curS = (new StringBuffer(Integer.toBinaryString(i)).reverse()).toString();
+            List<Integer> oneIndex = new ArrayList<>();
+            for (int j = 0; j < curS.length(); j++) {
+                if (curS.charAt(j) == '1') {
+                    oneIndex.add(j);
+                }
+            }
+            boolean isPar = true;
+            for (int j = 0; j < oneIndex.size()/2; j++) {
+                if (s.charAt(oneIndex.get(j)) != s.charAt(oneIndex.get(oneIndex.size()-1-j))) {
+                    isPar = false;
+                    break;
+                }
+            }
+            if (isPar) {
+                map.put(i, oneIndex.size());
+            }
+        }
+        int max = 1;
+        //System.out.println(map);
+        List<Integer> keys = new ArrayList<>(map.keySet());
+        for (int i = 0; i < keys.size(); i++) {
+            for (int j = i+1; j < keys.size(); j++) {
+                if ((keys.get(i) & keys.get(j)) == 0) {
+                    max = Math.max(map.get(keys.get(i)) * map.get(keys.get(j)), max);
+                }
+            }
+        }
+        return max;
     }
 
     public String reversePrefix(String word, char ch) {

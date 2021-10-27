@@ -222,4 +222,15 @@ public class Algorithm {
         }
         return s.substring(start, start + maxLen);
     }
+
+    // 计算 从1 ~ (10^2-1) 中一共出现多少个1
+    public int countDigitOneHelper(int n) {
+        //        if (n == 0) {
+        //            return 0;
+        //        } else {
+        //            return (int) Math.pow(10, n - 1) + 10 * countDigitOneHelper(n - 1);
+        //        }
+        // 与上面代码等价
+        return n * (int) Math.pow(10, n - 1);
+    }
 }
