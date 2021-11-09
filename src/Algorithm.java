@@ -233,4 +233,19 @@ public class Algorithm {
         // 与上面代码等价
         return n * (int) Math.pow(10, n - 1);
     }
+
+    public List<List<String>> getAllPermutation(List<String> ss) {
+        List<List<String>> ret = new ArrayList<>();
+        ret.add(new ArrayList<>());
+        for (String s : ss) {
+            List<List<String>> cur = new ArrayList<>();
+            for (List<String> l : ret) {
+                List<String> tmp = new ArrayList<>(l);
+                tmp.add(s);
+                cur.add(tmp);
+            }
+            ret.addAll(cur);
+        }
+        return ret;
+    }
 }
