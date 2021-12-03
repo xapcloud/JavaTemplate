@@ -197,7 +197,7 @@ class MyCircularDeque {
     }
 }
 
-
+// 729
 class RandomizedSet {
     Map<Integer, Integer> map;
     List<Integer> list;
@@ -240,7 +240,17 @@ class RandomizedSet {
     }
 }
 
+class MyCalendar {
 
+    public MyCalendar() {
+
+    }
+
+    public boolean book(int start, int end) {
+
+        return true;
+    }
+}
 
 class LockingTree {
     private int [] parent;
@@ -443,10 +453,7 @@ public class Function {
     Map<Integer, Integer> map = new HashMap<>();
 
 
-    public static int test(Map<Integer, Integer> test) {
-        test.put(1, 1);
-        return 1;
-    }
+
 
     public static void main(String[] args) throws IOException {
         Function f = new Function();
@@ -510,10 +517,467 @@ public class Function {
 //        String [] ss = {"aaaa","asas","able","ability","actt","actor","access"};
 //        String [] x = {"aboveyz","abrodyz","abslute","absoryz","actresz","gaswxyz"};
 //        System.out.println(f.findNumOfValidWords(ss, x));
-        List<String> l = new ArrayList<>(Arrays.asList("1","2","3","4"));
-        Algorithm a = new Algorithm();
-        System.out.println(a.getAllPermutation(l));
+        //char[][] s = {{'.','.'},{'X','X'}};
+        //System.out.println(f.countBattleships(s));
 
+
+        //"mississippi"
+        //"m??*ss*?i*pi"
+
+//        char [][] x = {{'1','0','1','0','0'},{'1','0','1','1','1'},{'1','1','1','1','1'},{'1','0','0','1','0'}};
+        //int [] x = {2,4,5,6,7,8,11,13,14,15,21,22,34};
+        //int [] x = {2,4,5,6,7,8,11,13,14};
+        //int [] x = {6,7,13,14,20};
+        int [] x = {2,4,7,8,9,10,14,15,18,23,32,50};
+        System.out.println(f.lenLongestFibSubseq(x));
+    }
+
+
+    public int lenLongestFibSubseq(int[] arr) {
+        Map<Integer, Integer> map = new HashMap<>();
+        int n = arr.length;
+        int [] max = new int[n];
+        int [] pre = new int[n];
+        int ret = 0;
+        max[0] = 1;
+        max[1] = 1;
+        pre[0] = -1;
+        pre[1] = -1;
+        map.put(arr[0], 0);
+        map.put(arr[1], 1);
+        for (int i = 2; i < n; i++) {
+            max[i] = 1;
+            map.put(arr[i], i);
+            for (int j = i-1; j > 0; j--) {
+                int diff = arr[i] - arr[j];
+                if (map.containsKey(diff) && map.get(diff) < j){
+                    if (pre[map.get(diff)] == -1 || arr[pre[map.get(diff)]] + arr[map.get(diff)] == arr[j]) {
+                        max[i] = Math.max(max[i], max[map.get(diff)] + 2);
+                        ret = Math.max(max[i], ret);
+                        pre[i] = j;
+                    } else {
+                        max[i] = Math.max(max[i], 3);
+                        pre[i] = j;
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            System.out.printf("%d: %d %d %d\n", i, arr[i], max[i], pre[i]);
+        }
+
+        return ret;
+    }
+
+    public int maximalRectangle(char[][] matrix) {
+        int m = matrix.length;
+        if (m == 0) {
+            return 0;
+        }
+        int n = matrix[0].length;
+        int [][] lenOne = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == '1') {
+                    lenOne[i][j] = (i > 0 ? lenOne[i-1][j]: 0) + 1;
+                } else {
+                    lenOne[i][j] = 0;
+                }
+            }
+        }
+//        for(int [] x : lenOne) {
+//            System.out.println(Arrays.toString(x));
+//        }
+        int max = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (lenOne[i][j] > 0) {
+                    int min = lenOne[i][j];
+                    for (int k = j; k >= 0 ; k--) {
+                        min = Math.min(min, lenOne[i][k]);
+                        max = Math.max(min * (j-k+1), max);
+                    }
+                }
+            }
+        }
+
+        return max;
+    }
+
+
+    public int pivotIndex(int[] nums) {
+        int n = nums.length;
+        int [] sum = new int[n];
+        for (int i = 0; i < n; i++) {
+            sum[i] = nums[i] + (i > 0 ? sum[i-1] : 0);
+        }
+        for (int i = 0; i < n; i++) {
+            int left = sum[i] - nums[i];
+            int right = sum[n-1] - sum[i];
+            if (left == right) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    public List<List<String>> accountsMerge(List<List<String>> accounts) {
+        Map<String, String> set = new TreeMap<>();
+        Map<String, Integer> map = new HashMap<>();
+        for (List<String> list : accounts) {
+            for (int i = 1; i < list.size(); i++) {
+                set.put(list.get(i), list.get(0));
+            }
+        }
+        int idx = 0;
+        for(String key : set.keySet()) {
+            map.put(key, idx++);
+        }
+
+        UnionFind uf = new UnionFind(set.size());
+        for (List<String> list : accounts) {
+            for (int i = 1; i < list.size() -1; i++) {
+                uf.union(map.get(list.get(i)), map.get(list.get(i+1)));
+            }
+        }
+
+        Map<Integer, List<String>> tmp = new HashMap<>();
+        for(String key: set.keySet()) {
+            int p = uf.find(map.get(key));
+            if (!tmp.containsKey(p)) {
+                tmp.computeIfAbsent(p, x-> new ArrayList<>()).add(set.get(key));
+            }
+            tmp.get(p).add(key);
+        }
+        List<List<String>> ret = new ArrayList<>(tmp.values());
+        return ret;
+    }
+
+
+    public int poorPigs(int buckets, int minutesToDie, int minutesToTest) {
+        if (buckets <= 1)
+            return 0;
+        int n = minutesToTest/minutesToDie + 1;
+        int cnt = 1;
+        int idx = 0;
+        while (true) {
+            cnt *= n;
+            idx += 1;
+            if (cnt >= buckets) {
+                break;
+            }
+        }
+        return idx;
+    }
+
+    public int poorPigs1(int buckets, int minutesToDie, int minutesToTest) {
+        if (buckets <= 1)
+            return 0;
+        int n = minutesToTest/minutesToDie + 1;
+        int tmp = (int)(Math.log(buckets)/Math.log(n));
+        if ((int)Math.pow(n, tmp) == buckets) {
+            return tmp;
+        } else {
+            return tmp + 1;
+        }
+    }
+
+
+    public int tupleSameProduct(int[] nums) {
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        int n = nums.length;
+        for (int i = 0; i < n; i++) {
+            for (int j = i+1; j < n; j++) {
+                map.computeIfAbsent(nums[i] * nums[j], x->new ArrayList<>()).add(nums[i]);
+            }
+        }
+        int ret = 0;
+        for (int k : map.keySet()) {
+            int s = map.get(k).size();
+            if (s > 1) {
+                ret += s*(s-1)*4;
+            }
+        }
+        return ret;
+    }
+
+
+    //Your input
+    //[[0,2],[5,10],[13,23],[24,25]]
+    //[[1,5],[8,12],[15,24],[25,26]]
+    //Output
+    //[[8,2],[15,10],[13,5],[13,12],[25,23],[24,5],[24,12]]
+    //Expected
+    //[[1,2],[5,5],[8,10],[15,23],[24,24],[25,25]]
+    public int[][] intervalIntersection(int[][] firstList, int[][] secondList) {
+        List<int[]> list = new ArrayList<>();
+        int m = firstList.length;
+        int n = secondList.length;
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int [] f = firstList[i];
+                int [] s = secondList[j];
+                if (f[1] >= s[0] && s[1] >= f[0]) {
+                    list.add(new int [] {Math.max(s[0], f[0]), Math.min(s[1], f[1])});
+                }
+
+                if (s[0] > f[1]) {
+                    break;
+                }
+            }
+        }
+        int [][] ret = new int[list.size()][2];
+        for (int i = 0; i < list.size(); i++) {
+            ret[i] = list.get(i);
+        }
+        return ret;
+    }
+
+    public String isMatchHelper(String p) {
+        Stack<Character> stack = new Stack<>();
+        char[] ss = p.toCharArray();
+        for(char c : ss) {
+            if (stack.isEmpty()) {
+                stack.add(c);
+            } else {
+                switch (c) {
+                    case '*':
+                        while(!stack.isEmpty() && stack.peek() == '*'){
+                            stack.pop();
+                        }
+                        stack.push(c);
+                        break;
+                    default:
+                        stack.push(c);
+                }
+            }
+        }
+        StringBuffer sb = new StringBuffer();
+        Iterator<Character> itr = stack.iterator();
+        while(itr.hasNext()) {
+            sb.append(itr.next());
+        }
+        return sb.toString();
+    }
+
+    public boolean isMath1(String s, String p) {
+        //System.out.printf("s:%s, p:%s\n", s, p);
+        if(s.length() == 0 && p.length() == 0) {
+            return true;
+        }
+        if (p.length() == 0) {
+            return false;
+        }
+        if (s.length() == 0) {
+            return p.equals("*");
+        }
+
+        switch (p.charAt(0)) {
+            case '*':
+                return isMath1(s, p.substring(1)) || isMath1(s.substring(1), p);
+            case '?':
+                return isMath1(s.substring(1), p.substring(1));
+            default:
+                return s.charAt(0) == p.charAt(0) && isMath1(s.substring(1), p.substring(1));
+        }
+    }
+
+    public boolean isMatch(String s, String p) {
+        p = isMatchHelper(p);
+        System.out.println(p);
+        return isMath1(s,p);
+    }
+
+    //[68,35,52,47,86]
+    //[67,17,1,81,3]
+    //[92,10,85,84,82]
+    // 204 324
+    public int maxProfitAssignment(int[] difficulty, int[] profit, int[] worker) {
+        int n = difficulty.length;
+        TreeMap<Integer, Integer> tm = new TreeMap<>();
+        for (int i = 0; i < n; i++) {
+            tm.put(difficulty[i], Math.max(tm.getOrDefault(difficulty[i], 0), profit[i]));
+        }
+        int curMax = 0;
+        for(int key : tm.keySet()) {
+            curMax = Math.max(curMax, tm.get(key));
+            tm.put(key, curMax);
+        }
+
+        int ret = 0;
+        int m = worker.length;
+        for (int i = 0; i < m; i++) {
+            if (tm.containsKey(worker[i])) {
+                ret += tm.get(worker[i]);
+            } else {
+                if (tm.lowerEntry(worker[i]) != null) {
+                    ret += tm.lowerEntry(worker[i]).getValue();
+                }
+            }
+        }
+
+        return ret;
+    }
+
+
+    //1 <= nums.length <= 2 * 104
+    //1 <= nums[i] <= 105
+    public int largestComponentSize(int[] nums) {
+        UnionFind uf = new UnionFind((int)1e5+1);
+        Set<Integer> set = new HashSet<>();
+        for(int x : nums) {
+            set.add(x);
+            for (int i = 2; i <= (int)Math.sqrt(x); i++) {
+                if(x%i==0) {
+                    uf.union(i, x);
+                    uf.union(x/i, x);
+                }
+            }
+        }
+        int ret = 0;
+        Map<Integer, Integer> cnt = new HashMap<>();
+        for (int i = 1; i <= (int)1e5 ; i++) {
+            if (set.contains(i)) {
+                int p = uf.find(i);
+                cnt.put(p, cnt.getOrDefault(p, 0)+1);
+                ret = Math.max(ret, cnt.get(p));
+            }
+        }
+//        for (int i = 1; i <= 40; i++) {
+//            if (set.contains(i))
+//                System.out.println(i + "\t"+uf.find(i));
+//        }
+
+
+        return ret;
+    }
+
+    public int kthSmallest(TreeNode root, int k) {
+        List<Integer> list = new ArrayList<>();
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        while(!queue.isEmpty()) {
+            TreeNode cur = queue.poll();
+            list.add(cur.val);
+
+            if (cur.left != null) {
+                queue.add(cur.left);
+            }
+            if (cur.right != null) {
+                queue.add(cur.right);
+            }
+        }
+        Collections.sort(list);
+        return list.get(k-1);
+    }
+    public static int test(Map<Integer, Integer> test) {
+        test.put(1, 1);
+        return 1;
+    }
+
+    /**
+     * Input
+     * [5,9,18,54,108,540,90,180,360,720]
+     * Output
+     * [5,540,90,180]
+     * Expected
+     * [9,18,90,180,360,720]
+     * @param nums
+     * @return
+     */
+
+    public List<Integer> largestDivisibleSubset(int[] nums) {
+        Arrays.sort(nums);
+        int n = nums.length;
+        int [] max = new int[n];
+        int [] pre = new int[n];
+        max[0] = 1;
+        pre[0] = 0;
+        int maxLen = 0;
+        int maxIdx = 0;
+        for (int i = 1; i < n; i++) {
+            max[i] = 1;
+            pre[i] = i;
+            for (int j = 0; j < i; j++) {
+                if (nums[i]%nums[j] == 0) {
+                    if (max[j]+1 > max[i]) {
+                        max[i] = max[j] + 1;
+                        pre[i] = j;
+                    }
+                }
+            }
+            if (max[i] > maxLen) {
+                maxLen = max[i];
+                maxIdx = i;
+            }
+        }
+        List<Integer> ret = new ArrayList<>();
+        
+        while(pre[maxIdx] != maxIdx) {
+            ret.add(nums[maxIdx]);
+            maxIdx = pre[maxIdx];
+        }
+        ret.add(nums[maxIdx]);
+        return ret;
+    }
+
+
+    public int maxValueAfterReverse(int[] nums) {
+        int res = 0;
+        int n = nums.length;
+        for (int i = 0; i < n -1 ; i++) {
+            res += Math.abs(nums[i] - nums[i+1]);
+        }
+
+        int diff = 0;
+        int maxMin = Integer.MIN_VALUE;
+        int minMax = Integer.MAX_VALUE;
+        for (int i = 0; i < n-1; i++) {
+            maxMin = Math.max(maxMin, Math.min(nums[i], nums[i+1]));
+            minMax = Math.min(minMax, Math.max(nums[i], nums[i+1]));
+        }
+        diff = Math.max(diff, 2 * (maxMin - minMax));
+        for (int i = 1; i < n-1; i++) {
+            diff = Math.max(diff, Math.abs(nums[i+1] - nums[0]) - Math.abs(nums[i+1] - nums[i]));
+            diff = Math.max(diff, Math.abs(nums[n-i-2] - nums[n-1]) - Math.abs(nums[n-i-2] - nums[n-i-1]));
+        }
+        return res + diff;
+    }
+
+    public int countBattleships(char[][] board) {
+        int m = board.length;
+        int n = board[0].length;
+
+        int ret = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] == 'X') {
+                    ret += 1;
+                } else {
+                    continue;
+                }
+
+                for (int k = i+1; k < m; k++) {
+                    if (board[k][j] == 'X') {
+                        board[k][j] = '.';
+                    } else {
+                        break;
+                    }
+                }
+
+                for (int k = j; k < n; k++) {
+                    if (board[i][k] == 'X') {
+                        board[i][k] = '.';
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+
+        return ret;
     }
 
     public List<Integer> findNumOfValidWords(String[] words, String[] puzzles) {
