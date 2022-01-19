@@ -322,4 +322,54 @@ public class Algorithm {
         }
         return ret;
     }
+
+    // 格雷码是一个二进制数系，其中两个相邻数的二进制位只有一位不同
+    public int g(int n) { 
+        return n ^ (n >> 1); 
+    }
+
+    // o(1) memory, o(n) time 环检测
+    public Pair<Integer, Integer> detectCycle(ListNode head) {
+        if (head == null || head.next == null) {
+            return null;
+        }
+        ListNode tortoise = head;
+        ListNode hare = head.next;
+        while (tortoise != hare) {
+            tortoise = (tortoise == null ? null : tortoise.next);
+            if (hare != null && hare.next != null) {
+                hare = hare.next.next;
+            } else {
+                hare = null;
+            }
+        }
+        if (hare == null) {
+            return null;
+        }
+        /* 
+        * 之类做下基本解释
+        * 对于torties， 停留在未知i， 则hare停留在1+2i
+        * 由于两者相遇，所以1+2i=i+kλ => 1+i=kλ
+        * 设环起始位置为μ, 则hare再多走1+μ, 即 1+2i+1+μ=2(1+i)+μ=2kλ+μ
+        * 所以hare回到环开始未知, torties从0出发，走μ也到起始位置相遇
+        * firstIdx 返回环起始位置idx(0-indexed)
+        * lam 则返回环的长度
+        */
+        tortoise = head;
+        hare = hare.next;
+        int firIdx = 0;
+        while (tortoise != hare) {
+            tortoise = tortoise.next;
+            hare = hare.next;
+            firIdx += 1;
+        }
+
+        int lam = 1;
+        hare = hare.next;
+        while (tortoise != hare) {
+            hare = hare.next;
+            lam += 1;
+        }
+        return new Pair<>(firIdx, lam);
+    }
 }
