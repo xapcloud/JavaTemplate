@@ -156,7 +156,6 @@ public class Algorithm {
         return l + 1;
     }
 
-
     //Arrays.binarySearch(arr, target)
     //Collections.binarySearch(Arrays.stream(arr).boxed().
     //collect(Collectors.toList()), target)
@@ -173,6 +172,30 @@ public class Algorithm {
             }
         }
         return -1;
+    }
+
+    // return the peak index 
+    // arr[0] < arr[1] < ... < arr[peak] > arr[peak+1] > ..
+    int ternarySearch(int[]arr) {
+        int l = 0, r = arr.length - 1;
+        while (l < r) {
+            int mid1 = l+(r-l)/2;
+            int mid2 = mid1+(r-mid1)/2;
+            if (arr[mid1] > arr[mid2]) {
+                r = mid2 - 1;
+            } else if (arr[mid1] < arr[mid2]) {
+                l = mid1 + 1;
+            } else {
+                // if mid1 != mid2 那么一定有arr[r] < arr[mid2] = arr[mid1]
+                if (arr[r] > arr[mid1]) {
+                    l = r;
+                } else {
+                    l = mid1;
+                    r = mid2;
+                }
+            }
+        }
+        return l;
     }
 
     int[] getSortedIndices(int[] arr) {

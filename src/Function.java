@@ -1,6 +1,7 @@
 package src;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -11,6 +12,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import javax.sound.sampled.SourceDataLine;
 
 // class Node {
 //     public int val;
@@ -565,11 +568,491 @@ public class Function {
     static DateTimeFormatter dft = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     Map<String, Set<Integer>> map = new HashMap<>();
 
-    public static void main(String[] args) throws IOException { 
+    public static void main(String[] args){ 
         Function f = new Function();
-        System.out.println(f.getClass().getName());
-        ListNode ln = new ListNode(1, new ListNode(2));
-        System.out.println(f.detectCycle(ln));
+        int [] x = {0,1,2,3,4,5,6,5,4,3,2,1,0};
+        Algorithm a = new Algorithm();
+        System.out.println(a.ternarySearch(x));
+    }
+
+    public int findInMountainArray(int target, List<Integer> mountainArr) {
+        int n = mountainArr.size();
+        // first find mountain peak
+        int begin = 0, end = n - 1;
+        while (begin < end) {
+            int mid1 = (begin + end)/2;
+            int mid2 = (mid1 + end)/2;
+
+            int r1 = mountainArr.get(mid1);
+            int r2 = mountainArr.get(mid2);
+            if (r1 > r2) {
+                end = mid2 - 1;
+            } else if (r1 < r2) {
+                begin = mid1 + 1;
+            } else {
+                int r3 = mountainArr.get(end);
+                if (r3 > r2) {
+                    begin = end;
+                } else {
+                    begin = mid1;
+                    end = mid2;
+                }
+            }
+        }
+        // begin is the mountain peak
+        int l = 0, r = begin;
+        while (l <= r) {
+            int m = (l + r)/2;
+            int cur = mountainArr.get(m);
+            if (cur < target) {
+                l = m + 1;
+            } else if (cur > target) {
+                r = m -1;
+            } else {
+                return m;
+            }
+        }
+
+        l = begin;
+        r = n - 1;
+        while (l <= r) {
+            int m = (l+r)/2;
+            int cur = mountainArr.get(m);
+            if (cur < target) {
+                r = m - 1;
+            } else if (cur > target) {
+                l = m + 1;
+            } else {
+                return m;
+            }
+        }
+
+
+
+        return -1;
+    }
+
+    public int minimumSwap(String s1, String s2) {
+        char[]ss1 = s1.toCharArray();
+        char[]ss2 = s2.toCharArray();
+        int n = ss1.length;
+        int xDiff = 0;
+        int yDiff = 0;
+        for (int i = 0; i < n; i++) {
+            if (ss1[i] != ss2[i]) {
+                if (ss1[i] == 'x') {
+                    xDiff += 1;
+                } else {
+                    yDiff += 1;
+                }
+            }
+        }
+        int ret = 0;
+        ret += xDiff/2;
+        ret += yDiff/2;
+        xDiff %= 2;
+        yDiff %= 2;
+        if (xDiff == 0 && yDiff == 0) {
+            return ret;
+        } else if (xDiff == 1 && yDiff == 1) {
+            return ret + 2;
+        } else {
+            return -1;
+        }
+    }
+
+    public int fourSumCount(int[] nums1, int[] nums2, int[] nums3, int[] nums4) {
+        Map<Integer, Integer> map = new HashMap<>();
+        int n = nums1.length;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                int cur = nums1[i] + nums2[j];
+                map.put(cur, map.getOrDefault(cur, 0)+1);
+            }
+        }
+
+        int ret = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                int cur = nums3[i] + nums4[j];
+                ret += map.getOrDefault(-cur, 0);
+            }
+        }
+     
+        return ret;
+    }
+
+
+    public boolean isValidSerializationHelper(Stack<String> stack, String s) {
+        if (s.equals("#") && !stack.isEmpty() && stack.peek().equals("#")) {
+            stack.pop();
+            if (stack.isEmpty() || stack.peek().equals("#")) {
+                return false;
+            } else {
+                stack.pop();
+                if (!isValidSerializationHelper(stack, "#")) {
+                    return false;
+                }
+            }
+        } else {
+            stack.push(s);
+        }
+        return true;
+    }
+
+    public boolean isValidSerialization1(String preorder) {
+        String[] pre = preorder.split(",");
+        Stack<String> stack = new Stack<>();
+        for (String s : pre) {
+            if (!isValidSerializationHelper(stack, s)) {
+                return false;
+            }
+        }
+        return stack.size() == 1 && stack.peek().equals("#");
+    }
+
+    public boolean isValidSerialization(String preorder) {
+        String[] s = preorder.split(",");
+        int len = s.length;
+        int[][] isValid = new int[len][len]; // []闭区间, 0:未访问,1:true,2:false
+        boolean ret = isValidSerialization(0, len-1, s, isValid);
+        // for(int [] x: isValid) {
+        //     System.out.println(Arrays.toString(x));
+        // }
+        return ret;
+    }
+    public boolean isValidSerialization(int s, int e, String[]pre, int[][] isValid) {
+        if (isValid[s][e] != 0) {
+            return isValid[s][e] == 1;
+        }
+        if (s==e) {
+            if (pre[s].equals("#")) {
+                isValid[s][e] = 1;
+                return true;
+            } else {
+                isValid[s][e] = 2;
+                return false;
+            }
+        } 
+        if (e - s == 1 || pre[s].equals("#")) {
+            isValid[s][e] = 2;
+            return false;          
+        }
+
+        boolean ret = false;
+        for (int i = s+1; i < e; i++) {
+            if (isValidSerialization(s+1,i,pre,isValid) && isValidSerialization(i+1,e,pre,isValid)) {
+                ret = true;
+                break;
+            }
+        }
+        isValid[s][e] = ret ? 1 : 2;
+        return ret;
+    }
+
+
+    public List<Double> averageOfLevels(TreeNode root) {
+        List<Double> ret = new ArrayList<>();
+        if (root == null) {
+            return ret;
+        }
+        Map<TreeNode, Integer> map = new HashMap<>();
+        long [] cnt = new long[10001];
+        long [] sum = new long[10001];
+        Queue<TreeNode> queue = new LinkedList<>();
+
+        queue.add(root);
+        map.put(root, 0);
+        while (!queue.isEmpty()) {
+            TreeNode cur = queue.poll();
+            cnt[map.get(cur)] ++;
+            sum[map.get(cur)] += cur.val;
+
+            if (cur.left != null) {
+                queue.add(cur.left);
+                map.put(cur.left, map.get(cur)+1);
+            }
+            if (cur.right != null) {
+                queue.add(cur.right);
+                map.put(cur.right, map.get(cur)+1);
+            }
+        }
+        for (int i = 0; i < 10001; i++) {
+            if (cnt[i] > 0) {
+                ret.add(sum[i]/(double)cnt[i]);
+            }
+        }
+        return ret;
+    }
+
+    public List<Integer> findAnagrams(String s, String p) {
+        int pLen = p.length();
+        int sLen = s.length();
+        Map<Character, Integer> map = new HashMap<>();
+        for (int i = 0; i < pLen; i++) {
+            char c = p.charAt(i);
+            map.put(c, map.getOrDefault(c, 0) + 1);
+        }
+
+        List<Integer> ret = new ArrayList<>();
+        Map<Character, Integer> cur = new HashMap<>();
+        for (int i = 0; i < sLen; i++) {
+            char c = s.charAt(i);
+            cur.put(c, cur.getOrDefault(c, 0) + 1);
+            if (i >= pLen) {
+                char de = s.charAt(i-pLen);
+                cur.put(de, cur.get(de)-1);
+            }
+            boolean isMatch = true;
+            for (char cc: map.keySet()) {
+                if (!map.get(cc).equals(cur.getOrDefault(cc, 0))) {
+                    isMatch = false;
+                    break;
+                }
+            }
+            if (isMatch) {
+                ret.add(i-pLen+1);
+            }
+        }
+        return ret;
+    }
+
+    public int findMaximumXOR(int[] nums) {
+        Set<Integer> set = new HashSet<>();
+        int ret = 0;
+        int mask = 0;
+        for (int i = 31; i >= 0; i--) {
+            mask = mask | 1 << i;
+            set.clear();
+            for (int x : nums) {
+                set.add(x & mask);
+            }
+            int e = ret | 1 << i;
+            for (int x : set) {
+                if (set.contains(e ^ x)) {
+                    ret = e;
+                    break;
+                }
+            }
+        }
+        return ret;
+    }
+
+
+
+    public String shortestPalindrome(String s) {
+    
+    
+        return "";
+    }
+
+    List<Integer> inOrder(TreeNode root) {
+        List<Integer> ret = new ArrayList<>();
+        Stack<TreeNode> stack = new Stack<>();
+        while (!stack.isEmpty() || root != null) {
+            if (root != null) {
+                stack.push(root);
+                root = root.left;
+            } else {
+                root = stack.pop();
+                ret.add(root.val);
+                root = root.right;
+            }
+        }
+        return ret;
+    }
+
+    public List<Integer> getAllElements(TreeNode root1, TreeNode root2) {
+        List<Integer> l1 = inOrder(root1);
+        List<Integer> l2 = inOrder(root2);
+
+        List<Integer> ret = new ArrayList<>();
+        int i = 0; 
+        int j = 0;
+        int len1 = l1.size();
+        int len2 = l2.size();
+        while (i < len1 || j < len2) {
+            if (i >= len1) {
+                ret.add(l2.get(j));
+                j++;
+            } else if (j >= len2) {
+                ret.add(l1.get(i));
+                i++;
+            } else {
+                if (l1.get(i) <= l2.get(j)) {
+                    ret.add(l1.get(i));
+                    i++;
+                } else {
+                    ret.add(l2.get(j));
+                    j++;
+                }
+            }
+        }
+        return ret;
+    }
+
+
+
+    public boolean validMountainArray(int[] arr) {
+        int maxIdx = -1;
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] > max) {
+                max = arr[i];
+                maxIdx = i;
+            }
+        }
+
+        if (maxIdx == 0 || maxIdx == arr.length - 1) {
+            return false;
+        }
+        for (int i = 0; i < maxIdx; i++) {
+            if (arr[i] >= arr[i+1]) {
+                return false;
+            }
+        }
+
+        for (int i = maxIdx; i < arr.length - 1; i++) {
+            if (arr[i] <= arr[i+1]) {
+                return false;
+            } 
+        }
+
+        return true;
+    }
+
+
+    public List<Integer> sequentialDigits(int low, int high) {
+        List<Integer> ret = new ArrayList<>();
+        int lowLen = String.valueOf(low).length();
+        int hightLen = String.valueOf(high).length();
+
+        for (int i = lowLen; i <= hightLen; i++) {
+            for (int j = 1; j <= 10 - i; j++) {
+                StringBuffer sb = new StringBuffer();
+                for (int k = 0; k < i; k++) {
+                    sb.append(j+k);
+                }
+                if (sb.length() > 0){
+                    int cur = Integer.parseInt(sb.toString());
+                    if (cur <= high && cur >= low) {
+                        ret.add(cur);
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+    
+    public int findIndex1(int[] remain) {
+        int n = remain.length;
+        int curGas = 0;
+        int[] minGasArr = new int[n];
+        int minGas = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            curGas += remain[i];
+            minGas = Math.min(minGas, curGas);
+            minGasArr[i] = minGas;
+        }
+        if (minGas >= 0) {
+            return 0;
+        }
+
+        int sumReamin = 0;
+        for (int i = n - 1; i > 0; i--) {
+            sumReamin += remain[i];
+            if (sumReamin > 0 && sumReamin + minGasArr[i-1] >= 0) {
+                return i;
+            }
+        }
+        return -1;      
+    }
+
+    public int findIndex(int[]remain) {
+        int n = remain.length;
+        int[] preSum = new int[n];
+        preSum[0] = remain[0];
+        int min = preSum[0];
+        int minIdx = 0;
+        for (int i = 1; i < n; i++) {
+            preSum[i] = preSum[i-1] + remain[i];
+            if (preSum[i] < min) {
+                min = preSum[i];
+                minIdx = i;
+            }
+        }
+        if (preSum[n-1] < 0) {
+            return -1;
+        }
+        return (minIdx + 1) % n;
+    }
+
+
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+        int sumGas = 0;
+        int sumCost = 0;
+        int n = gas.length;
+        for (int i = 0; i < n; i++) {
+            sumCost += cost[i];
+        }
+        for (int i = 0; i < n; i++) {
+            sumGas += gas[i];
+        }
+        if (sumGas < sumCost) {
+            return -1;
+        }
+
+        int[] remain = new int[n];
+        for (int i = 0; i < n; i++) {
+            remain[i] = gas[i] - cost[i];
+        }
+
+        // first from index 0 
+        int curGas = 0;
+        int[] minGasArr = new int[n];
+        int minGas = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            curGas += remain[i];
+            minGas = Math.min(minGas, curGas);
+            minGasArr[i] = minGas;
+        }
+        if (minGas >= 0) {
+            return 0;
+        }
+
+        int sumReamin = 0;
+        for (int i = n - 1; i > 0; i--) {
+            sumReamin += remain[i];
+            if (sumReamin > 0 && sumReamin + minGasArr[i-1] >= 0) {
+                return i;
+            }
+        }
+     
+        return -1;
+    }
+
+
+    public int minEatingSpeed(int[] piles, int h) {
+        int l = 1; 
+        int r = Integer.MAX_VALUE;
+
+        while (l < r) {
+            int mid = l + (r-l)/2;
+            if (minEatingSpeedHelper(piles, h, mid)) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        } 
+        return r;
+    }
+
+    public boolean minEatingSpeedHelper(int[] piles, int h, int k) {
+        int total = 0;
+        for (int i = 0; i < piles.length; i++) {
+            total += (piles[i]/k + (piles[i]%k == 0 ? 0 : 1));
+        }
+        return total <= h;
     }
 
     public Pair<Integer, Integer> detectCycle(ListNode head) {
