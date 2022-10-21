@@ -152,7 +152,7 @@ public class Tree {
                 break;
             }
             for(TreeNode n: map.get(i)){
-                System.out.print(n.toString()+"\t");
+                System.out.print(n.val+"\t");
             }
             System.out.println();
         }

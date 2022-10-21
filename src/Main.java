@@ -20,29 +20,45 @@ public class Main {
         int T = nextInt();
         for (int i = 0; i < T; i++) {
             int n = nextInt();
-            solve(n, map);
+            int[] songLen = new int[n];
+            for (int j = 0; j < n; j++) {
+                songLen[j] = nextInt();
+            }
+            int q = nextInt();
+            int [][] op = new int[q][2];
+            for (int j = 0; j < q; j++) {
+                op[j][0] = nextInt();
+                op[j][1] = nextInt();
+            }
+            solve(n, songLen, q, op);
         }
-
     }
 
-    private static void solve(int n, Map<Integer, Long> map) {
-        int x = n; int y = 1;
-        for(int i = 0; i < 20; i ++) {
-            boolean flag = false;
-            for(int j = 0; j  <= i ; j ++){
-                if(map.get(i)/(map.get(j)*map.get(i-j)) == n && map.get(i)%(map.get(j)*map.get(i-j)) == 0){
-                    x = i;
-                    y = j;
-                    flag = true;
+    private static void solve(int n, int[] songLen, int q, int[][]op) {
 
-                    break;
+        TreeMap<Long, Long> tm = new TreeMap<>();
+        long startIdx = 0;
+        for (int i = 0; i < n; i++) {
+            tm.put(startIdx, (long)i+1);
+            startIdx += songLen[i];
+        }
+        long idx = n+1;
+        long curTime = 0;
+        for (int i = 0; i < q; i++) {
+            if (op[i][0] == 1) {
+                tm.put(startIdx, idx++);
+                startIdx += op[i][1];
+            } else {
+                curTime = curTime + op[i][1];
+                curTime = curTime % startIdx;
+
+                if (tm.containsKey(curTime)) {
+                    System.out.println(tm.get(curTime));
+                } else {
+                    System.out.println(tm.lowerEntry(curTime).getValue());
                 }
             }
-            if(flag){
-                break;
-            }
         }
-        System.out.println(x+" "+y);
     }
 
 
